@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MineSafe-Fog — Industrial Safety Control Room</title>
+<style>
+:root{--bg:#0b0f12;--panel:#12181d;--panel2:#172027;--line:#26323a;--text:#e8eef2;--muted:#8b9aa5;--cyan:#39c6e8;--green:#35d07f;--amber:#f0b94b;--red:#ff4d5d;--blue:#4da3ff}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:14px Inter,Segoe UI,Arial,sans-serif} button,input,select{font:inherit}
+button{cursor:pointer;border:1px solid var(--line);background:#182128;color:var(--text);padding:10px 14px;border-radius:6px}
+button:hover{background:#202c34} .app{display:flex;min-height:100vh}.sidebar{width:230px;background:#0e1418;border-right:1px solid var(--line);padding:22px 14px;position:fixed;inset:0 auto 0 0}
+.logo{font-weight:800;letter-spacing:1px;font-size:18px}.logo span{color:var(--cyan)}.tag{font-size:10px;color:var(--muted);margin-top:4px}.nav{margin-top:34px}.nav button{display:block;width:100%;text-align:left;background:transparent;border:0;margin:4px 0;padding:12px;border-radius:5px;color:#aebbc3}.nav button.active,.nav button:hover{background:#182229;color:white}.nav .ico{display:inline-block;width:26px;color:var(--cyan)}
+.system{position:absolute;bottom:20px;left:18px;right:18px;border-top:1px solid var(--line);padding-top:15px}.online{color:var(--green);font-size:12px}.operator{margin-top:16px;color:var(--muted);font-size:11px}.main{margin-left:230px;flex:1}.topbar{height:72px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:#0d1317;position:sticky;top:0;z-index:5}.eyebrow{color:var(--cyan);font-size:11px;letter-spacing:1.5px}.title{font-size:22px;font-weight:700;margin-top:3px}.site{display:flex;gap:22px;align-items:center}.site b{font-size:12px}.content{padding:24px;max-width:1600px;margin:auto}.grid{display:grid;gap:14px}.kpis{grid-template-columns:repeat(5,1fr)}.card{background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:17px}.kpi-label{color:var(--muted);font-size:11px;letter-spacing:.8px}.kpi{font-size:30px;font-weight:750;margin:7px 0}.safe{color:var(--green)}.warning{color:var(--amber)}.critical{color:var(--red)}.info{color:var(--cyan)}.muted{color:var(--muted)}.dashboard{grid-template-columns:minmax(0,2.2fr) minmax(300px,.9fr);margin-top:14px}.panel-title{font-size:13px;font-weight:700;letter-spacing:.7px;margin-bottom:14px}.map{height:430px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 45%,#27333a 0,#182126 40%,#11171b 75%)}.terrain{position:absolute;inset:0;opacity:.75;background:linear-gradient(135deg,transparent 40%,#202b31 41%,#202b31 43%,transparent 44%),linear-gradient(25deg,transparent 45%,#252f35 46%,#252f35 48%,transparent 49%)}.road{position:absolute;height:22px;background:#8b9295;border:4px solid #4d575c;transform-origin:left center;opacity:.9}.r1{width:390px;left:40px;top:105px;transform:rotate(16deg)}.r2{width:470px;left:170px;top:255px;transform:rotate(-13deg)}.r3{width:420px;left:320px;top:335px;transform:rotate(7deg)}.zone{position:absolute;border:1px dashed #67757d;color:#b4c0c7;padding:6px 9px;font-size:10px;background:#10171bcc}.fog{position:absolute;left:48%;top:48%;width:300px;height:220px;border-radius:50%;background:radial-gradient(circle,#b8c3c82a 0,#aeb9bd18 45%,transparent 70%);filter:blur(10px);animation:fog 4s ease-in-out infinite}.foglabel{position:absolute;left:54%;top:53%;font-size:10px;color:#cbd4d8}.veh{position:absolute;width:32px;height:23px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;border:2px solid #101416;box-shadow:0 0 0 2px #ffffff10;transition:.4s}.veh.safe{background:#35d07f;color:#07120b}.veh.warning{background:#f0b94b;color:#171006}.veh.critical{background:#ff4d5d;color:white;animation:pulse 1.5s infinite}.v1{left:18%;top:25%}.v2{left:31%;top:36%}.v3{left:48%;top:51%}.v4{left:57%;top:57%}.v5{left:43%;top:72%}.v6{left:66%;top:66%}.v7{left:70%;top:49%}.legend{position:absolute;bottom:10px;left:12px;display:flex;gap:12px;font-size:10px;background:#0d1418dd;padding:8px;border:1px solid var(--line)}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}.alerts{height:430px;overflow:auto}.alert{padding:12px;border:1px solid var(--line);border-left:3px solid var(--amber);margin-bottom:9px;background:#151d22}.alert.crit{border-left-color:var(--red)}.alerthead{display:flex;justify-content:space-between;font-size:11px;font-weight:700}.alert p{margin:7px 0;color:#d4dde2}.small{font-size:11px;color:var(--muted)}.health{grid-template-columns:repeat(6,1fr);margin-top:14px}.health .bar{height:4px;background:#263238;margin-top:8px}.health .bar i{display:block;height:100%;background:currentColor}.chart{height:190px;display:flex;align-items:end;gap:8px;padding-top:15px}.barcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}.bars{width:100%;height:140px;display:flex;align-items:end;gap:2px}.bars i{display:block;flex:1;border-radius:2px 2px 0 0}.tablewrap{overflow:auto}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:12px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}.table th{font-size:10px;color:var(--muted);letter-spacing:.8px}.status{padding:4px 7px;border-radius:3px;font-size:10px;font-weight:800}.status.safe{background:#143c27}.status.warning{background:#44351a}.status.critical{background:#481b22}.toolbar{display:flex;gap:8px;margin-bottom:14px}.toolbar input,.toolbar select{background:#121a1f;border:1px solid var(--line);color:white;padding:10px;border-radius:5px}.vehicle-head{display:flex;justify-content:space-between;align-items:center}.riskbox{border:1px solid #69242c;background:#251418;padding:20px;margin-top:14px}.risknum{font-size:42px;font-weight:800;color:var(--red)}.telemetry{grid-template-columns:repeat(6,1fr);margin-top:14px}.telemetry b{font-size:22px;display:block;margin-top:6px}.fusion{grid-template-columns:repeat(3,1fr);margin-top:14px}.sensor{border:1px solid var(--line);padding:13px;background:#141c21}.sensor .score{float:right;color:var(--cyan);font-weight:700}.fusioncenter{grid-column:1/-1;text-align:center;padding:22px;background:#101b20;border:1px solid #24505b}.confirm{font-size:24px;color:var(--green);font-weight:800;margin-top:7px}.ttc{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:14px}.formula{font-family:monospace;color:var(--cyan);font-size:18px}.progress{height:9px;background:#2a2022;margin-top:12px}.progress i{display:block;height:100%;background:var(--red);width:100%}.driver{min-height:calc(100vh - 72px);display:flex;align-items:center;justify-content:center;background:#050708}.driverbox{width:min(800px,92%);text-align:center;border:2px solid #54232a;background:#0b0e10;padding:42px}.driver .fogtext{color:#b6c2c7;letter-spacing:3px}.warnicon{font-size:82px;color:var(--red);animation:pulse 1.2s infinite}.driver h1{font-size:46px;margin:8px 0;color:white}.driver .meters{font-size:58px;font-weight:900}.driver .ttcBig{font-size:34px;color:var(--red);font-weight:900}.driver .instruction{background:#a81423;color:white;font-size:28px;font-weight:900;padding:20px;margin:20px 0}.driver .sensors{display:flex;justify-content:center;gap:18px;color:var(--green);font-size:11px}.ack{margin-top:20px;font-size:17px;padding:15px 28px}.mapfull{height:650px}.network{position:absolute;left:57%;top:56%;width:170px;border-top:3px dashed var(--blue);transform:rotate(-8deg)}.networklabel{position:absolute;left:62%;top:52%;color:var(--blue);font-size:10px}.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:20}.modal.show{display:flex}.modalbox{width:min(560px,90%);background:#12191e;border:1px solid #5c2b32;padding:24px;box-shadow:0 20px 60px #000}.modalgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:15px 0}.toast{position:fixed;right:22px;bottom:22px;background:#38161b;border:1px solid var(--red);padding:15px 18px;display:none;z-index:30}.toast.show{display:block;animation:slide .3s}.demo{display:flex;gap:8px;align-items:center}.demoactive{color:var(--red);font-weight:800}.hidden{display:none!important}@keyframes pulse{50%{box-shadow:0 0 0 6px #ff4d5d16}}@keyframes fog{50%{transform:scale(1.08);opacity:.8}}@keyframes slide{from{transform:translateY(20px);opacity:0}}
+.login{min-height:100vh;display:flex;background:linear-gradient(#071015aa,#071015ee),url('https://images.unsplash.com/photo-1513828583688-c52646db42da?auto=format&fit=crop&w=1800&q=80') center/cover}.loginLeft{flex:1;padding:9%;display:flex;flex-direction:column;justify-content:center}.loginLeft h1{font-size:48px;max-width:650px;margin:18px 0}.loginLeft p{font-size:17px;color:#bdc8cd;max-width:600px;line-height:1.6}.loginCard{width:430px;background:#0d1419ee;border-left:1px solid var(--line);padding:70px 50px;display:flex;flex-direction:column;justify-content:center}.loginCard h2{margin-bottom:28px}.loginCard label{font-size:11px;color:var(--muted);margin:12px 0 6px}.loginCard input,.loginCard select{padding:13px;background:#131c21;border:1px solid var(--line);color:white}.enter{margin-top:22px;background:#17697b;border-color:#278ca3;font-weight:800}.footstatus{margin-top:28px;padding-top:18px;border-top:1px solid var(--line)}
+.livecard{border:1px solid #1f4a52;background:#0e1b1e;margin-top:14px}.livehead{display:flex;justify-content:space-between;align-items:center}.livedot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px}.livedot.on{background:var(--green);box-shadow:0 0 8px var(--green)}.livedot.off{background:var(--red)}.livedot.stale{background:var(--amber)}.livegrid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:14px}.livegrid .card{background:#101c20}.liveline{font-size:11px;color:var(--muted);margin-top:10px}
+@media(max-width:1000px){.sidebar{width:190px}.main{margin-left:190px}.kpis{grid-template-columns:repeat(2,1fr)}.dashboard{grid-template-columns:1fr}.health,.telemetry{grid-template-columns:repeat(3,1fr)}.loginLeft{display:none}.loginCard{width:100%}}
+</style>
+</head>
+<body>
+<div id="login" class="login">
+  <div class="loginLeft">
+    <div class="logo">MINESAFE<span>-FOG</span></div><div class="tag">AI-POWERED MINE VEHICLE SAFETY</div>
+    <h1>SAFER HAULAGE IN EXTREME VISIBILITY CONDITIONS</h1>
+    <p>Multi-sensor perception, collision-risk assessment and real-time fleet monitoring for mine vehicles.</p>
+  </div>
+  <div class="loginCard">
+    <div class="eyebrow">SECURE ACCESS</div><h2>CONTROL ROOM LOGIN</h2>
+    <label>Operator ID</label><input id="operator" value="CR-OP-014">
+    <label>Password</label><input type="password" value="minesafe">
+    <label>Mine Site</label><select><option>Bailadila Mine</option></select>
+    <button class="enter" onclick="enterApp()">ENTER CONTROL ROOM →</button>
+    <div class="footstatus"><span class="online">● All systems operational</span><div class="small">MineSafe-Fog Prototype • SIH 2026</div></div>
+  </div>
+</div>
+
+<div id="app" class="app hidden">
+<aside class="sidebar">
+  <div class="logo">MINESAFE<span>-FOG</span></div><div class="tag">INDUSTRIAL SAFETY SYSTEM</div>
+  <nav class="nav">
+    <button data-page="dashboard" onclick="go('dashboard')"><span class="ico">▦</span>Dashboard</button>
+    <button data-page="vehicles" onclick="go('vehicles')"><span class="ico">◆</span>Live Vehicles</button>
+    <button data-page="map" onclick="go('map')"><span class="ico">⌖</span>Mine Map</button>
+    <button data-page="alerts" onclick="go('alerts')"><span class="ico">!</span>Alerts</button>
+    <button data-page="driver" onclick="go('driver')"><span class="ico">◉</span>Driver View</button>
+    <button data-page="settings" onclick="go('settings')"><span class="ico">⚙</span>Settings</button>
+  </nav>
+  <div class="system"><div class="small">SYSTEM STATUS</div><div class="online">● ONLINE</div><div class="operator">OPERATOR<br><b style="color:white">Control Room Operator</b></div></div>
+</aside>
+<main class="main">
+<header class="topbar"><div><div class="eyebrow" id="sectionEyebrow">CONTROL ROOM</div><div class="title" id="sectionTitle">Real-time mine vehicle safety monitoring</div></div>
+<div class="site"><div><div class="small">MINE SITE</div><b>BAILADILA MINE</b></div><div><div class="small">LOCAL TIME</div><b id="clock">09:42 PM</b></div><div class="online">● SYSTEM ONLINE</div></div></header>
+<div id="page" class="content"></div>
+</main>
+</div>
+
+<div id="modal" class="modal"><div class="modalbox">
+<div style="display:flex;justify-content:space-between"><div><div class="eyebrow">SAFETY EVENT</div><h2 style="margin:6px 0">CRITICAL COLLISION ALERT</h2></div><button onclick="closeModal()">✕</button></div>
+<div class="modalgrid"><div>VEHICLE<br><b>D-04</b></div><div>TARGET<br><b>D-07</b></div><div>DISTANCE<br><b>18 m</b></div><div>RELATIVE SPEED<br><b>6 m/s</b></div><div>TTC<br><b class="critical">3.0 sec</b></div><div>AI CONFIDENCE<br><b>94%</b></div></div>
+<div class="small">DETECTION SOURCES</div><p>Radar ✓ &nbsp; LiDAR ✓ &nbsp; Thermal ✓ &nbsp; V2V ✓</p>
+<div class="small">DRIVER ALERT</div><p class="critical"><b>ISSUED</b> • 20:52:14</p>
+<div style="display:flex;gap:8px"><button onclick="go('vehicle');closeModal()">OPEN VEHICLE</button><button onclick="go('driver');closeModal()">OPEN DRIVER VIEW</button><button onclick="closeModal()">MARK REVIEWED</button></div>
+</div></div>
+<div id="toast" class="toast"><b>🔴 NEW CRITICAL ALERT</b><br>D-04 • TTC 3.0 sec</div>
+
+<script>
+const state={page:'dashboard',demo:false,ack:false,step:0,visibility:5,distance:18,ttc:3};
+const liveData={vehicle:'D01',distance:null,closing_speed:0,ttc:null,risk:'WAITING',action:'WAITING',led:'OFF',buzzer:'OFF',sensor:'OFFLINE',connected:false};
+let liveAlerts=[];
+const vehicles=[
+{id:'D-01',status:'safe',speed:22,vis:18,obj:'None',dist:'—',ttc:'—',dir:'North'},
+{id:'D-02',status:'safe',speed:20,vis:15,obj:'D-01',dist:42,ttc:'8.2 sec',dir:'East'},
+{id:'D-03',status:'warning',speed:17,vis:7,obj:'D-05',dist:31,ttc:'5.4 sec',dir:'South'},
+{id:'D-04',status:'critical',speed:12,vis:5,obj:'D-07',dist:18,ttc:'3.0 sec',dir:'West'},
+{id:'D-05',status:'safe',speed:21,vis:8,obj:'None',dist:'—',ttc:'—',dir:'North'},
+{id:'D-06',status:'warning',speed:15,vis:6,obj:'D-02',dist:27,ttc:'4.1 sec',dir:'East'},
+{id:'D-07',status:'critical',speed:18,vis:5,obj:'D-04',dist:18,ttc:'3.0 sec',dir:'East'}];
+
+function enterApp(){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');go('dashboard')}
+function go(p){state.page=p;document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));render()}
+function status(s){return `<span class="status ${s}">${s.toUpperCase()}</span>`}
+function riskClass(r){return r==='CRITICAL'?'critical':r==='WARNING'?'warning':r==='SAFE'?'safe':'muted'}
+function render(){
+ const p=document.getElementById('page'); let title='Real-time mine vehicle safety monitoring';
+ if(state.page==='dashboard')p.innerHTML=dashboard();
+ if(state.page==='vehicles')p.innerHTML=vehiclesPage();
+ if(state.page==='vehicle')p.innerHTML=vehiclePage();
+ if(state.page==='map')p.innerHTML=mapPage();
+ if(state.page==='alerts')p.innerHTML=alertsPage();
+ if(state.page==='driver')p.innerHTML=driverPage();
+ if(state.page==='settings')p.innerHTML=settingsPage();
+ const names={dashboard:'CONTROL ROOM',vehicles:'LIVE VEHICLES',vehicle:'DUMPER D-04',map:'MINE MAP & VEHICLE NETWORK',alerts:'SAFETY ALERTS & INCIDENT HISTORY',driver:'DRIVER VIEW',settings:'SYSTEM SETTINGS'};
+ document.getElementById('sectionEyebrow').textContent=names[state.page];
+ document.getElementById('sectionTitle').textContent=title;
+}
+function dashboard(){
+return `<div class="demo"><button onclick="startDemo()">▶ START SAFETY SIMULATION</button>${state.demo?'<span class="demoactive">● DEMO MODE ACTIVE</span><button onclick="pauseDemo()">Ⅱ Pause</button><button onclick="restartDemo()">↻ Restart</button><button onclick="exitDemo()">Exit Demo</button>':''}</div>
+<div class="grid kpis" style="margin-top:14px">
+${[['ACTIVE VEHICLES','24','info'],['SAFE','18','safe'],['WARNING','4','warning'],['CRITICAL','2','critical'],['VISIBILITY',state.visibility+' m',state.visibility<=5?'critical':'warning'],['FOG LEVEL',state.visibility<=5?'EXTREME':state.visibility<=8?'HIGH':state.visibility<=12?'MODERATE':'NORMAL',state.visibility<=5?'critical':'warning']].map(x=>`<div class="card"><div class="kpi-label">${x[0]}</div><div class="kpi ${x[2]}">${x[1]}</div></div>`).join('')}</div>
+<div class="card livecard"><div class="livehead"><div class="panel-title" style="margin-bottom:0"><span class="livedot ${liveData.sensor==='ONLINE'?'on':liveData.sensor==='STALE'?'stale':'off'}"></span>LIVE ARDUINO FEED — VEHICLE ${liveData.vehicle}</div><div class="small">SENSOR: <b class="${liveData.sensor==='ONLINE'?'safe':liveData.sensor==='STALE'?'warning':'critical'}">${liveData.sensor}</b></div></div>
+<div class="livegrid">
+<div class="card"><div class="kpi-label">DISTANCE</div><div class="kpi info">${liveData.distance!==null?liveData.distance.toFixed(1)+' cm':'—'}</div></div>
+<div class="card"><div class="kpi-label">CLOSING SPEED</div><div class="kpi info">${liveData.closing_speed!==undefined?liveData.closing_speed.toFixed(1)+' cm/s':'—'}</div></div>
+<div class="card"><div class="kpi-label">TTC</div><div class="kpi ${riskClass(liveData.risk)}">${liveData.ttc!==null?liveData.ttc.toFixed(1)+' s':'—'}</div></div>
+<div class="card"><div class="kpi-label">RISK</div><div class="kpi ${riskClass(liveData.risk)}">${liveData.risk}</div></div>
+<div class="card"><div class="kpi-label">ACTION</div><div class="kpi ${riskClass(liveData.risk)}">${liveData.action}</div></div>
+</div>
+<div class="liveline">LED <b>${liveData.led}</b> &nbsp;•&nbsp; BUZZER <b>${liveData.buzzer}</b> &nbsp;•&nbsp; Polling /api/status every 1s ${liveData.connected?'':'&nbsp;•&nbsp; <span class="critical">no connection to backend — is app.py running?</span>'}</div>
+</div>
+<div class="grid dashboard"><div class="card"><div class="panel-title">LIVE MINE OPERATIONS</div>${mineMap(false)}</div><div class="card"><div class="panel-title">LIVE SAFETY ALERTS</div>${alertMini()}</div></div>
+<div class="grid health">${[['RADAR','ONLINE','98','safe'],['LIDAR','ONLINE','96','safe'],['THERMAL CAMERA','ONLINE','94','safe'],['RGB CAMERA',state.visibility<=5?'DEGRADED':'ONLINE',state.visibility<=5?'62':'92',state.visibility<=5?'warning':'safe'],['GPS/DGPS','ONLINE','99','safe'],['V2V NETWORK','ONLINE','97','safe']].map(x=>`<div class="card ${x[3]}"><div class="kpi-label">${x[0]}</div><b>${x[1]}</b><div class="small">${x[2]}%</div><div class="bar"><i style="width:${x[2]}%"></i></div></div>`).join('')}</div>
+<div class="card" style="margin-top:14px"><div class="panel-title">SAFETY EVENTS — LAST 60 MINUTES</div>${chart()}</div>
+<div class="small" style="margin:16px 0">“When visibility disappears, MineSafe-Fog provides an additional layer of perception, risk assessment and connected safety awareness.”</div>`;
+}
+function mineMap(full){
+return `<div class="map ${full?'mapfull':''}"><div class="terrain"></div><div class="road r1"></div><div class="road r2"></div><div class="road r3"></div>
+<div class="zone" style="left:8%;top:8%">LOADING ZONE</div><div class="zone" style="right:8%;top:12%">DUMPING ZONE</div><div class="zone" style="left:13%;bottom:10%">CRUSHER ZONE</div><div class="zone" style="right:8%;bottom:10%">RESTRICTED ZONE</div>
+<div class="fog"></div><div class="foglabel">LOW VISIBILITY ZONE • ${state.visibility} m</div>
+${vehicles.map((v,i)=>`<button class="veh ${v.status} v${i+1}" onclick="go('vehicle')" title="${v.id}">${v.id}</button>`).join('')}
+${full?'<div class="network"></div><div class="networklabel">V2V CONNECTION</div>':''}
+<div class="legend"><span><i class="dot" style="background:var(--green)"></i>Safe</span><span><i class="dot" style="background:var(--amber)"></i>Warning</span><span><i class="dot" style="background:var(--red)"></i>Critical</span><span><i class="dot" style="background:var(--blue)"></i>V2V Link</span><span>▧ Haul Road</span></div></div>`;
+}
+function alertMini(){return `${liveAlerts.slice(0,5).map(a=>`<div class="alert ${a.risk==='CRITICAL'?'crit':''}" onclick="go('dashboard')"><div class="alerthead"><span class="${a.risk==='CRITICAL'?'critical':'warning'}">${a.risk} • LIVE</span><span>${liveData.vehicle}</span></div><p>Real-time sensor alert (${a.time})</p><div class="small">Distance <b>${a.distance!==null?a.distance.toFixed(1)+' cm':'—'}</b> • TTC <b class="${a.risk==='CRITICAL'?'critical':'warning'}">${a.ttc!==null?a.ttc.toFixed(1)+' s':'—'}</b></div></div>`).join('')}
+<div class="alert crit" onclick="go('vehicle')"><div class="alerthead"><span class="critical">CRITICAL</span><span>D-04</span></div><p>Collision risk detected</p><div class="small">Distance <b>18 m</b> • TTC <b class="critical">3.0 sec</b></div></div>
+<div class="alert" onclick="go('vehicle')"><div class="alerthead"><span class="warning">WARNING</span><span>D-03</span></div><p>Vehicle approaching</p><div class="small">Distance <b>31 m</b> • TTC <b>5.4 sec</b></div></div>
+<div class="alert" onclick="go('vehicle')"><div class="alerthead"><span class="warning">WARNING</span><span>D-06</span></div><p>Visibility below threshold</p><div class="small">Visibility <b>6 m</b></div></div>`}
+function chart(){let a=[8,12,10,15,9,17,14,11,18,13,16,12],w=[3,5,4,6,5,7,4,6,8,5,7,6],c=[0,1,0,1,0,0,1,0,1,0,1,1];return `<div class="chart">${a.map((n,i)=>`<div class="barcol"><div class="bars"><i style="height:${n*5}px;background:var(--green)"></i><i style="height:${w[i]*5}px;background:var(--amber)"></i><i style="height:${c[i]*14}px;background:var(--red)"></i></div><span class="small">${i*5}m</span></div>`).join('')}</div><div class="small"><span class="safe">■ Safe</span> &nbsp; <span class="warning">■ Warnings</span> &nbsp; <span class="critical">■ Critical</span></div>`}
+function vehiclesPage(){return `<div class="toolbar"><input id="search" placeholder="Search vehicle" oninput="filterVehicles()"><select id="filter" onchange="filterVehicles()"><option value="all">All status</option><option value="safe">Safe</option><option value="warning">Warning</option><option value="critical">Critical</option></select><button onclick="render()">↻ Refresh</button></div><div class="card tablewrap"><table class="table" id="vtable"><thead><tr><th>VEHICLE</th><th>STATUS</th><th>SPEED</th><th>VISIBILITY</th><th>NEAREST OBJECT</th><th>DISTANCE</th><th>TTC</th><th>DIRECTION</th><th>SENSOR STATUS</th></tr></thead><tbody>${vehicles.map(v=>`<tr data-status="${v.status}" data-id="${v.id}"><td><button onclick="go('vehicle')">${v.id}</button></td><td>${status(v.status)}</td><td>${v.speed} km/h</td><td>${v.vis} m</td><td>${v.obj}</td><td>${v.dist==='—'?'—':v.dist+' m'}</td><td>${v.ttc}</td><td>${v.dir}</td><td><span class="safe">● GOOD</span></td></tr>`).join('')}</tbody></table></div>`}
+function filterVehicles(){let q=document.getElementById('search').value.toLowerCase(),f=document.getElementById('filter').value;document.querySelectorAll('#vtable tbody tr').forEach(r=>r.style.display=(r.dataset.id.toLowerCase().includes(q)&&(f==='all'||r.dataset.status===f))?'':'none')}
+function vehiclePage(){return `<div class="vehicle-head"><div><div class="eyebrow">SELECTED VEHICLE</div><h1 style="margin:6px 0">DUMPER D-04</h1><div class="small">HAUL ROAD H-03</div></div>${status('critical')}</div>
+<div class="riskbox"><div class="eyebrow critical">COLLISION RISK DETECTED</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:12px"><div>NEAREST VEHICLE<h2>D-07</h2></div><div>DISTANCE<h2>18 m</h2></div><div>RELATIVE SPEED<h2>6 m/s</h2></div><div>TTC<h2 class="critical">3.0 SEC</h2><b class="critical">HIGH RISK</b></div></div></div>
+<div class="grid telemetry">${[['CURRENT SPEED','12 km/h'],['DIRECTION','West'],['VISIBILITY','5 m'],['FOG','Extreme'],['GPS LOCATION','18.3214° N'],['DGPS','81.1234° E']].map(x=>`<div class="card"><div class="kpi-label">${x[0]}</div><b>${x[1]}</b></div>`).join('')}</div>
+<div class="card" style="margin-top:14px"><div class="panel-title">MULTI-SENSOR FUSION</div><div class="grid fusion">
+${[['RADAR','Vehicle detected','18.0 m','96%'],['LIDAR','Object detected','18.4 m','91%'],['THERMAL CAMERA','Vehicle signature detected','—','94%'],['RGB CAMERA','Low visibility','—','62%'],['GPS / DGPS','Position locked','±2 m','99%'],['V2V','D-07 detected','Strong','97%']].map(x=>`<div class="sensor"><b>${x[0]}</b><span class="score">${x[3]}</span><p>${x[1]}</p><div class="small">${x[2]}</div></div>`).join('')}
+<div class="fusioncenter">RADAR ✓ &nbsp; LIDAR ✓ &nbsp; THERMAL ✓ &nbsp; V2V ✓<div class="eyebrow" style="margin-top:15px">AI SENSOR FUSION</div><div class="confirm">✓ CONFIRMED VEHICLE</div><div class="small">Confidence 94%</div></div></div></div>
+<div class="ttc"><div class="card"><div class="panel-title">TIME-TO-COLLISION</div><div style="display:flex;gap:30px"><div>DISTANCE<h2>18 m</h2></div><div>RELATIVE SPEED<h2>6 m/s</h2></div><div>RESULT<h2 class="critical">3.0 sec</h2></div></div><div class="formula">TTC = Distance / Relative Speed = 18 / 6 = 3.0 seconds</div><div class="progress"><i></i></div></div>
+<div class="card"><div class="panel-title">AI RISK ASSESSMENT</div><p>Vehicle D-07 detected ahead. Multiple sensors confirm the target. Current TTC indicates elevated collision risk.</p><b class="critical">RECOMMENDATION: ISSUE IMMEDIATE DRIVER WARNING</b><p class="small">Reduce speed / stop according to approved mine safety procedures.</p><button onclick="go('driver')">OPEN DRIVER VIEW →</button></div></div>`}
+function driverPage(){return `<div class="driver"><div class="driverbox"><div class="logo">MINESAFE<span>-FOG</span></div><div class="fogtext">🌫 EXTREME FOG</div><div class="small" style="margin-top:18px">VISIBILITY</div><div class="meters">${state.visibility} METRES</div>${state.ack?'<div class="safe" style="font-size:24px;font-weight:900;margin:12px">✓ ALERT ACKNOWLEDGED</div>':'<><div class="warnicon">⚠</div><div class="small">VEHICLE AHEAD</div><div class="meters">18 METRES</div><div class="ttcBig">TTC 3.0 SEC</div><div class="instruction">🔴 COLLISION RISK<br><span style="font-size:22px">REDUCE SPEED / STOP</span></div><div style="color:var(--amber);margin:10px">🔊 VOICE ALERT ACTIVE</div><div class="small">“Warning. Vehicle detected ahead. Collision risk.”</div></>'}<div class="sensors" style="margin-top:20px"><span>RADAR ●</span><span>LIDAR ●</span><span>THERMAL ●</span><span>GPS ●</span><span>V2V ●</span></div>${state.ack?'<div style="margin-top:20px;color:var(--amber)">MONITORING HAZARD</div>':'<button class="ack" onclick="ackAlert()">ACKNOWLEDGE ALERT</button>'}<br><button style="margin-top:14px" onclick="go('dashboard')">RETURN TO CONTROL ROOM</button></div></div>`}
+function mapPage(){return `<div class="card"><div class="panel-title">MINE MAP & VEHICLE NETWORK</div>${mineMap(true)}</div><div class="grid" style="grid-template-columns:1fr 1fr;margin-top:14px"><div class="card"><div class="panel-title">V2V RISK DETECTION</div><b>D-04 ←────────→ D-07</b><p>“D-07 detected through vehicle-to-vehicle communication despite limited visual visibility.”</p></div><div class="card"><div class="panel-title">D-07 TELEMETRY</div><p>Distance <b>18 m</b> • Speed <b>18 km/h</b> • Direction <b>East</b> • Signal <span class="safe"><b>Strong</b></span></p></div></div>`}
+function alertsPage(){return `<div class="grid kpis"><div class="card"><div class="kpi-label">ACTIVE CRITICAL</div><div class="kpi critical">2</div></div><div class="card"><div class="kpi-label">ACTIVE WARNING</div><div class="kpi warning">4</div></div><div class="card"><div class="kpi-label">RESOLVED TODAY</div><div class="kpi safe">17</div></div></div><div class="card" style="margin-top:14px"><div class="toolbar"><button class="active">ACTIVE</button><button>RESOLVED</button><button>ALL EVENTS</button></div><div class="tablewrap"><table class="table"><thead><tr><th>TIME</th><th>VEHICLE</th><th>EVENT</th><th>DISTANCE</th><th>TTC</th><th>SEVERITY</th><th>STATUS</th></tr></thead><tbody>
+<tr onclick="openModal()"><td>20:52</td><td>D-04</td><td>Vehicle ahead detected</td><td>18 m</td><td>3.0 sec</td><td>${status('critical')}</td><td>ACTIVE</td></tr>
+<tr><td>20:49</td><td>D-03</td><td>Reduced visibility</td><td>—</td><td>—</td><td>${status('warning')}</td><td>ACTIVE</td></tr>
+<tr><td>20:43</td><td>D-06</td><td>Vehicle approaching</td><td>27 m</td><td>4.1 sec</td><td>${status('warning')}</td><td>ACTIVE</td></tr>
+<tr><td>20:35</td><td>D-02</td><td>Hazard cleared</td><td>46 m</td><td>8.7 sec</td><td>${status('safe')}</td><td>RESOLVED</td></tr>
+</tbody></table></div></div>`}
+function settingsPage(){return `<div class="grid" style="grid-template-columns:1fr 1fr"><div class="card"><div class="panel-title">SAFETY THRESHOLDS</div>${[['Warning TTC','5 sec'],['Critical TTC','3 sec'],['Warning Visibility','10 m'],['Critical Visibility','5 m']].map(x=>`<div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:14px 0">${x[0]}<b>${x[1]}</b></div>`).join('')}</div><div class="card"><div class="panel-title">SENSOR CONFIGURATION</div>${['Radar','LiDAR','Thermal Camera','RGB Camera','GPS/DGPS','V2V'].map(x=>`<div style="display:flex;justify-content:space-between;padding:10px 0">${x}<span class="safe">● Enabled</span></div>`).join('')}</div><div class="card"><div class="panel-title">NOTIFICATIONS</div>${['Critical Alerts','Warning Alerts','Voice Alerts'].map(x=>`<div style="display:flex;justify-content:space-between;padding:10px 0">${x}<span class="safe">● Enabled</span></div>`).join('')}</div><div class="card"><div class="panel-title">PROTOTYPE DISCLAIMER</div><p class="small">Prototype thresholds are illustrative. Actual operational limits must follow approved mine safety procedures.</p></div></div>`}
+function openModal(){document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function ackAlert(){state.ack=true;render();showToast('✓ ALERT ACKNOWLEDGED')}
+function showToast(t){let x=document.getElementById('toast');x.innerHTML='<b>'+t+'</b>';x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2600)}
+let timer=null;
+function startDemo(){state.demo=true;state.step=0;state.visibility=18;state.distance=42;state.ttc=8.2;go('dashboard');runDemo()}
+function runDemo(){clearInterval(timer);timer=setInterval(()=>{state.step++;if(state.step===1){state.visibility=12;state.distance=31;state.ttc=5.4}if(state.step===2){state.visibility=8;state.distance=25;state.ttc=4.1}if(state.step===3){state.visibility=5;state.distance=18;state.ttc=3.0;showToast('🔴 NEW CRITICAL ALERT<br>D-04 • TTC 3.0 sec')}if(state.step===4){go('vehicle')}if(state.step===5){go('driver')}if(state.step>=6){clearInterval(timer);state.step=0}render()},1800)}
+function pauseDemo(){clearInterval(timer)}
+function restartDemo(){startDemo()}
+function exitDemo(){clearInterval(timer);state.demo=false;state.visibility=5;state.distance=18;state.ttc=3;go('dashboard')}
+setInterval(()=>{let d=new Date();document.getElementById('clock').textContent=d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})},1000)
+
+// =====================================
+// LIVE BACKEND POLLING (app.py / Arduino)
+// =====================================
+async function pollLive(){
+ try{
+  const [statusRes,alertsRes]=await Promise.all([fetch('/api/status'),fetch('/api/alerts')]);
+  if(!statusRes.ok||!alertsRes.ok)throw new Error('bad response');
+  const s=await statusRes.json();
+  const a=await alertsRes.json();
+  Object.assign(liveData,s,{connected:true});
+  liveAlerts=a;
+ }catch(e){
+  liveData.connected=false;
+  liveData.sensor='OFFLINE';
+ }
+ if(document.getElementById('app')&&!document.getElementById('app').classList.contains('hidden')&&state.page==='dashboard')render();
+}
+setInterval(pollLive,1000);
+pollLive();
+
+render();
+</script>
+</body>
+</html>
